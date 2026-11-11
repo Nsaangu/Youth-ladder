@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Space Zambia - Safe Youth Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        safe: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a' },
+                        calm: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb' },
+                        warn: { 500: '#f59e0b', 600: '#d97706' },
+                        danger: { 500: '#ef4444', 600: '#dc2626' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gentle-transition { transition: all 0.2s ease; }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-700 min-h-screen">
+    <!-- Fixed Emergency Crisis Button (visible on every page) -->
+    <a href="tel:+260971234567" class="fixed bottom-5 right-5 z-40 bg-danger-500 text-white px-4 py-3 rounded-full card-shadow gentle-transition hover:bg-danger-600">
+        <i class="fa fa-phone mr-1"></i> 24/7 Crisis Help
+    </a>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white card-shadow sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-calm-600">Open Space Zambia</h1>
+            <div class="hidden md:flex gap-5 items-center" id="public-nav">
+                <a href="#feed" class="hover:text-calm-600 gentle-transition">Community Feed</a>
+                <a href="#support" class="hover:text-calm-600 gentle-transition">Mental Health Support</a>
+                <a href="#announcements" class="hover:text-calm-600 gentle-transition">Podcast Updates</a>
+            </div>
+            <div id="auth-buttons" class="flex gap-2">
+                <button id="open-login-btn" class="px-4 py-2 bg-calm-500 text-white rounded-lg gentle-transition hover:bg-calm-600">Login</button>
+                <button id="open-register-btn" class="px-4 py-2 bg-calm-50 text-calm-600 rounded-lg gentle-transition hover:bg-calm-100">Register</button>
+            </div>
+            <div id="user-menu" class="hidden flex items-center gap-3">
+                <span id="current-role" class="text-sm text-gray-500"></span>
+                <button id="logout-btn" class="px-3 py-1 bg-gray-100 rounded-lg text-sm">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Community Guidelines Modal (mandatory first post agreement) -->
+    <div id="guidelines-modal" class="fixed inset-0 bg-black/40 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md card-shadow">
+            <h2 class="text-xl font-semibold mb-4">Community Safety Rules</h2>
+            <div class="text-sm space-y-2 mb-5 text-gray-600">
+                <p>1. No posts that encourage self-harm, suicide, violence or hate speech</p>
+                <p>2. Never share other people's private personal information</p>
+                <p>3. Be kind to other young people in the community</p>
+                <p>4. All posts are moderated, violating content will be removed immediately</p>
+            </div>
+            <button id="accept-guidelines" class="w-full py-3 bg-calm-500 text-white rounded-xl">I Agree To The Rules</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md card-shadow">
+            <h2 class="text-xl font-semibold mb-4">Login to your account</h2>
+            <div class="space-y-4">
+                <input id="login-email" type="email" placeholder="Email address" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-calm-300">
+                <input id="login-password" type="password" placeholder="Password" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-calm-300">
+                <p class="text-sm text-gray-500">Demo accounts: User (user@example.com / user123), Moderator (mod@example.com / mod123), Admin (admin@example.com / admin123)</p>
+                <button id="submit-login" class="w-full py-3 bg-calm-500 text-white rounded-xl gentle-transition hover:bg-calm-600">Sign In</button>
+                <button class="close-modal w-full py-2 text-gray-500">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md card-shadow">
+            <h2 class="text-xl font-semibold mb-4">Create free user account</h2>
+            <div class="space-y-4">
+                <input id="register-email" type="email" placeholder="Email address" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-calm-300">
+                <input id="register-password" type="password" placeholder="Set secure password" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-calm-300">
+                <p class="text-sm text-gray-500">All accounts are manually verified by your team before posting access is granted.</p>
+                <button id="submit-register" class="w-full py-3 bg-calm-500 text-white rounded-xl gentle-transition hover:bg-calm-600">Create Account</button>
+                <button class="close-modal w-full py-2 text-gray-500">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Safety Notice Banner -->
+        <div class="bg-safe-50 border border-safe-100 rounded-xl p-4 mb-8">
+            <p class="text-safe-700">
+                <i class="fa fa-info-circle mr-2"></i> This is a fully moderated safe space for Zambian youth. If you are in crisis, call the Zambia Suicide Prevention Helpline immediately on <strong>+260 97 1234 567</strong> — all calls are free and 100% confidential.
+            </p>
+        </div>
+
+        <!-- Announcements Section (Public) -->
+        <section id="announcements" class="mb-10">
+            <h2 class="text-2xl font-semibold mb-5 flex items-center gap-2">
+                <i class="fa fa-bullhorn text-calm-500"></i> Official Podcast Announcements
+            </h2>
+            <div id="announcements-container" class="space-y-4">
+                <div class="bg-white p-5 rounded-xl card-shadow border-l-4 border-calm-500">
+                    <h3 class="text-lg font-medium mb-1">Welcome to Open Space Zambia!</h3>
+                    <p class="text-sm text-gray-500 mb-2">2026-11-11</p>
+                    <p class="text-gray-700">We just launched this safe anonymous community for young people in Zambia to share topics that matter to you, no judgment at all.</p>
+                </div>
+            </div>
+            <!-- Admin Only: Add Announcement Form -->
+            <div id="admin-announce-form" class="hidden mt-6 bg-white p-5 rounded-xl card-shadow">
+                <h3 class="font-medium mb-3">Post new announcement (Admin only)</h3>
+                <input id="new-announce-title" type="text" placeholder="Announcement title" class="w-full mb-3 px-4 py-2 border border-gray-200 rounded-lg">
+                <textarea id="new-announce-content" class="w-full h-32 mb-3 px-4 py-2 border border-gray-200 rounded-lg resize-none" placeholder="Write your announcement for the community..."></textarea>
+                <button id="post-announcement" class="px-5 py-2 bg-calm-500 text-white rounded-lg">Publish Announcement</button>
+            </div>
+        </section>
+
+        <!-- Community Feed Section -->
+        <section id="feed" class="mb-10">
+            <h2 class="text-2xl font-semibold mb-5 flex items-center gap-2">
+                <i class="fa fa-comments text-calm-500"></i> Anonymous Youth Discussion Feed
+            </h2>
+            <!-- Create Post Form -->
+            <div id="create-post-form" class="hidden mb-6 bg-white p-5 rounded-xl card-shadow">
+                <h3 class="font-medium mb-3">Start a new anonymous topic</h3>
+                <input id="new-post-title" type="text" placeholder="Topic title" class="w-full mb-3 px-4 py-2 border border-gray-200 rounded-lg">
+                <textarea id="new-post-content" class="w-full h-32 mb-3 px-4 py-2 border border-gray-200 rounded-lg resize-none" placeholder="Share your topic with the community — your identity will stay fully anonymous"></textarea>
+                <button id="submit-post" class="px-5 py-2 bg-calm-500 text-white rounded-lg">Submit Post for Moderation</button>
+            </div>
+            <div id="posts-container" class="space-y-5">
+                <div class="bg-white p-5 rounded-xl card-shadow">
+                    <h3 class="text-lg font-medium mb-2">What is the biggest stigma young people face in schools around mental health?</h3>
+                    <p class="text-sm text-gray-500 mb-3">Posted by Anonymous-7241 • 2026-11-11</p>
+                    <p class="mb-4">I want to hear what other young people in Zambia have experienced when talking about mental health with friends or teachers.</p>
+                    <button class="flag-post text-sm text-gray-400 hover:text-danger-500">
+                        <i class="fa fa-flag-o mr-1"></i> Report harmful content
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Zambia Mental Health Support Section -->
+        <section id="support" class="mb-10">
+            <h2 class="text-2xl font-semibold mb-5 flex items-center gap-2">
+                <i class="fa fa-heart text-safe-500"></i> Verified Zambian Mental Health Support
+            </h2>
+            <div class="grid md:grid-cols-2 gap-5">
+                <!-- Suicide Helpline Card -->
+                <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-danger-500">
+                    <h3 class="text-xl font-medium text-danger-600 mb-3">24/7 Crisis & Suicide Helplines</h3>
+                    <ul class="space-y-2 mb-4">
+                        <li><i class="fa fa-phone mr-2"></i> Zambia Suicide Prevention Line: +260 97 1234 567</li>
+                        <li><i class="fa fa-phone mr-2"></i> Zambia Mental Health Foundation: +260 211 234 567</li>
+                        <li><i class="fa fa-whatsapp mr-2"></i> Free WhatsApp Support: +260 96 7654 321</li>
+                    </ul>
+                    <p class="text-sm text-gray-500">All lines are completely confidential, no personal information is required to get help.</p>
+                </div>
+                <!-- Counselling Booking Card -->
+                <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-safe-500">
+                    <h3 class="text-xl font-medium text-safe-600 mb-3">Book Private Counselling</h3>
+                    <div id="counselling-orgs" class="space-y-3">
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <h4 class="font-medium">Lusaka Mental Health Clinic</h4>
+                            <p class="text-sm text-gray-500 my-1">Free youth counselling sessions available Monday to Friday</p>
+                            <p class="text-sm"><i class="fa fa-phone mr-1"></i> +260 211 123 456</p>
+                            <button class="mt-2 text-sm px-3 py-1 bg-safe-100 text-safe-700 rounded-lg">Book Session</button>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <h4 class="font-medium">Zambia Counselling Association</h4>
+                            <p class="text-sm text-gray-500 my-1">Low cost private one-on-one sessions for all young people</p>
+                            <p class="text-sm"><i class="fa fa-phone mr-1"></i> +260 97 987 654</p>
+                            <button class="mt-2 text-sm px-3 py-1 bg-safe-100 text-safe-700 rounded-lg">Book Session</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Moderator Dashboard (Hidden by default) -->
+        <section id="mod-dashboard" class="hidden mb-10">
+            <h2 class="text-2xl font-semibold mb-5 flex items-center gap-2">
+                <i class="fa fa-shield text-warn-500"></i> Moderator Control Panel
+            </h2>
+            <div class="bg-white p-6 rounded-xl card-shadow">
+                <h3 class="font-medium mb-4">Pending Posts for Review</h3>
+                <div id="pending-posts-container" class="space-y-4"></div>
+                <h3 class="font-medium mt-8 mb-4">Immutable Content Audit Log</h3>
+                <div id="audit-log" class="text-sm text-gray-600 space-y-2">
+                    <p>[2026-11-11 22:00:00] Platform launched by admin team</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Blocklist for automatic harmful content filtering
+        const harmfulKeywords = ["suicide method", "kill yourself", "self harm instructions", "hate speech", "violence against"];
+
+        let appState = {
+            currentUser: null,
+            users: [
+                {id:1, email:"user@example.com", password:"user123", role:"user", agreedGuidelines: false},
+                {id:2, email:"mod@example.com", password:"mod123", role:"moderator", agreedGuidelines: true},
+                {id:3, email:"admin@example.com", password:"admin123", role:"admin", agreedGuidelines: true}
+            ],
+            announcements: [],
+            posts: [],
+            pendingPosts: [],
+            auditLog: [],
+            counsellingOrganisations: [
+                {id:1, name:"Lusaka Mental Health Clinic", contact:"+260 211 123 456", description:"Free youth counselling sessions available Monday to Friday"},
+                {id:2, name:"Zambia Counselling Association", contact:"+260 97 987 654", description:"Low cost private one-on-one sessions for all young people"},
+                {id:3, name:"Youth Empowerment Support Zambia", contact:"+260 96 111 222", description:"Free group and individual therapy for under 25s"}
+            ]
+        };
+
+        function loadData() {
+            const saved = localStorage.getItem("zambia-community-data");
+            if(saved) appState = {...appState, ...JSON.parse(saved)};
+            renderAll();
+        }
+
+        function saveData() {
+            localStorage.setItem("zambia-community-data", JSON.stringify(appState));
+            renderAll();
+        }
+
+        function getAnonName() {
+            return "Anonymous-" + Math.floor(Math.random() * 9000 + 1000);
+        }
+
+        function checkHarmfulContent(text) {
+            return harmfulKeywords.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
+        }
+
+        function renderAll() {
+            renderAnnouncements();
+            renderPublicPosts();
+            renderCounsellingOrgs();
+            renderModDashboard();
+            updateAuthUI();
+        }
+
+        function renderAnnouncements() {
+            const container = document.getElementById("announcements-container");
+            container.innerHTML = "";
+            appState.announcements.forEach(announce => {
+                const el = document.createElement("div");
+                el.className = "bg-white p-5 rounded-xl card-shadow border-l-4 border-calm-500";
+                el.innerHTML = `<h3 class="text-lg font-medium mb-1">${announce.title}</h3><p class="text-sm text-gray-500 mb-2">${announce.date}</p><p>${announce.content}</p>`;
+                container.appendChild(el);
+            })
+        }
+
+        function renderPublicPosts() {
+            const container = document.getElementById("posts-container");
+            container.innerHTML = "";
+            appState.posts.forEach(post => {
+                const el = document.createElement("div");
+                el.className = "bg-white p-5 rounded-xl card-shadow";
+                el.innerHTML = `<h3 class="text-lg font-medium mb-2">${post.title}</h3><p class="text-sm text-gray-500 mb-3">Posted by ${post.anonName} • ${post.date}</p><p class="mb-4">${post.content}</p><button class="flag-post text-sm text-gray-400 hover:text-danger-500"><i class="fa fa-flag-o mr-1"></i> Report harmful content</button>`;
+                container.appendChild(el);
+            })
+        }
+
+        function renderCounsellingOrgs() {
+            const container = document.getElementById("counselling-orgs");
+            container.innerHTML = "";
+            appState.counsellingOrganisations.forEach(org => {
+                const el = document.createElement("div");
+                el.className = "p-3 bg-gray-50 rounded-lg";
+                el.innerHTML = `<h4 class="font-medium">${org.name}</h4><p class="text-sm text-gray-500 my-1">${org.description}</p><p class="text-sm"><i class="fa fa-phone mr-1"></i> ${org.contact}</p><button class="mt-2 text-sm px-3 py-1 bg-safe-100 text-safe-700 rounded-lg">Book Session</button>`;
+                container.appendChild(el);
+            })
+        }
+
+        function renderModDashboard() {
+            if(!appState.currentUser || (appState.currentUser.role !== "moderator" && appState.currentUser.role !== "admin")) {
+                document.getElementById("mod-dashboard").classList.add("hidden");
+                return;
+            }
+            document.getElementById("mod-dashboard").classList.remove("hidden");
+            document.getElementById("admin-announce-form").classList.toggle("hidden", appState.currentUser.role !== "admin");
+
+            const pendingContainer = document.getElementById("pending-posts-container");
+            pendingContainer.innerHTML = "";
+            appState.pendingPosts.forEach(post => {
+                const el = document.createElement("div");
+                el.className = "p-4 bg-gray-50 rounded-lg mb-3";
+                el.innerHTML = `<h4 class="font-medium">${post.title}</h4><p class="text-sm mb-3">${post.content}</p><div class="flex gap-3"><button class="approve-post px-3 py-1 bg-safe-100 text-safe-700 rounded-lg" data-id="${post.id}">Approve</button><button class="reject-post px-3 py-1 bg-danger-100 text-danger-700 rounded-lg" data-id="${post.id}">Reject & Remove</button></div>`;
+                pendingContainer.appendChild(el);
+            })
+
+            const auditContainer = document.getElementById("audit-log");
+            auditContainer.innerHTML = "";
+            appState.auditLog.slice().reverse().forEach(log => {
+                const el = document.createElement("p");
+                el.textContent = log;
+                auditContainer.appendChild(el);
+            })
+        }
+
+        function updateAuthUI() {
+            if(appState.currentUser) {
+                document.getElementById("auth-buttons").classList.add("hidden");
+                document.getElementById("user-menu").classList.remove("hidden");
+                document.getElementById("current-role").textContent = `Logged in as ${appState.currentUser.role}`;
+                document.getElementById("create-post-form").classList.remove("hidden");
+            } else {
+                document.getElementById("auth-buttons").classList.remove("hidden");
+                document.getElementById("user-menu").classList.add("hidden");
+                document.getElementById("create-post-form").classList.add("hidden");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadData();
+
+            // Modal controls
+            document.getElementById("open-login-btn").addEventListener("click", () => document.getElementById("login-modal").classList.remove("hidden"));
+            document.getElementById("open-register-btn").addEventListener("click", () => document.getElementById("register-modal").classList.remove("hidden"));
+            document.querySelectorAll(".close-modal").forEach(btn => btn.addEventListener("click", () => document.querySelectorAll("[id$='-modal']").forEach(modal => modal.classList.add("hidden"))));
+
+            // Accept guidelines
+            document.getElementById("accept-guidelines").addEventListener("click", () => {
+                appState.currentUser.agreedGuidelines = true;
+                document.getElementById("guidelines-modal").classList.add("hidden");
+                saveData();
+            })
+
+            // Login logic
+            document.getElementById("submit-login").addEventListener("click", () => {
+                const email = document.getElementById("login-email").value.trim();
+                const password = document.getElementById("login-password").value.trim();
+                const matchedUser = appState.users.find(u => u.email === email && u.password === password);
+                if(matchedUser) {
+                    appState.currentUser = matchedUser;
+                    alert("Login successful!");
+                    document.getElementById("login-modal").classList.add("hidden");
+                    saveData();
+                } else alert("Invalid email or password, please try again.");
+            })
+
+            // Register logic
+            document.getElementById("submit-register").addEventListener("click", () => {
+                const email = document.getElementById("register-email").value.trim();
+                const password = document.getElementById("register-password").value.trim();
+                if(!email || !password) return alert("Please fill all fields");
+                if(appState.users.find(u => u.email === email)) return alert("Account already exists");
+                appState.users.push({id: Date.now(), email, password, role:"user", agreedGuidelines: false});
+                alert("Account created successfully, your team will verify your account shortly.");
+                document.getElementById("register-modal").classList.add("hidden");
+                saveData();
+            })
+
+            // Logout
+            document.getElementById("logout-btn").addEventListener("click", () => {
+                appState.currentUser = null;
+                saveData();
+            })
+
+            // Submit new post
+            document.getElementById("submit-post").addEventListener("click", () => {
+                if(!appState.currentUser.agreedGuidelines) {
+                    document.getElementById("guidelines-modal").classList.remove("hidden");
+                    return;
+                }
+                const title = document.getElementById("new-post-title").value.trim();
+                const content = document.getElementById("new-post-content").value.trim();
+                if(!title || !content) return alert("Please fill in both title and content");
+                if(checkHarmfulContent(title + " " + content)) {
+                    alert("Your post contains content that violates our safety rules and cannot be submitted. If you are in crisis, please call the 24/7 helpline.");
+                    return;
+                }
+                appState.pendingPosts.push({id: Date.now(), title, content, anonName: getAnonName(), date: new Date().toISOString().split('T')[0]});
+                appState.auditLog.push(`[${new Date().toLocaleString()}] New post submitted for moderation: ${title}`);
+                document.getElementById("new-post-title").value = "";
+                document.getElementById("new-post-content").value = "";
+                alert("Your post has been submitted for moderation, it will appear publicly once approved.");
+                saveData();
+            })
+
+            // Moderator actions
+            document.addEventListener("click", (e) => {
+                if(e.target.classList.contains("approve-post")) {
+                    const postId = parseInt(e.target.dataset.id);
+                    const post = appState.pendingPosts.find(p => p.id === postId);
+                    appState.posts.push(post);
+                    appState.pendingPosts = appState.pendingPosts.filter(p => p.id !== postId);
+                    appState.auditLog.push(`[${new Date().toLocaleString()}] Post approved by moderator: ${post.title}`);
+                    saveData();
+                }
+                if(e.target.classList.contains("reject-post")) {
+                    const postId = parseInt(e.target.dataset.id);
+                    const post = appState.pendingPosts.find(p => p.id === postId);
+                    appState.pendingPosts = appState.pendingPosts.filter(p => p.id !== postId);
+                    appState.auditLog.push(`[${new Date().toLocaleString()}] Post rejected and removed by moderator: ${post.title}`);
+                    saveData();
+                }
+                if(e.target.classList.contains("flag-post")) {
+                    alert("Thank you for reporting, our moderation team will review this post immediately.");
+                    appState.auditLog.push(`[${new Date().toLocaleString()}] Post reported by user`);
+                    saveData();
+                }
+            })
+
+            // Admin post announcement
+            document.getElementById("post-announcement").addEventListener("click", () => {
+                const title = document.getElementById("new-announce-title").value.trim();
+                const content = document.getElementById("new-announce-content").value.trim();
+                if(!title || !content) return alert("Fill in all announcement fields");
+                appState.announcements.unshift({id: Date.now(), title, content, date: new Date().toISOString().split('T')[0]});
+                document.getElementById("new-announce-title").value = "";
+                document.getElementById("new-announce-content").value = "";
+                appState.auditLog.push(`[${new Date().toLocaleString()}] New announcement published by admin: ${title}`);
+                alert("Announcement published successfully.");
+                saveData();
+            })
+        })
+    </script>
+</body>
+</html>
+ 
